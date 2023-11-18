@@ -2,7 +2,7 @@ let myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
 function submitForm() {
-    const loginForm = document.querySelector("form");
+    const loginForm = document.querySelector("#loginForm");
     loginForm.addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -26,6 +26,7 @@ function submitForm() {
           })
           .then(result => {
             window.localStorage.setItem("token", result.token);
+            window.localStorage.setItem("userId", result.userId);
             window.location.href = "../index.html";
           })
           .catch(error => {
