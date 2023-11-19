@@ -65,6 +65,41 @@ function creerFiltres() {
     }
 }
 
+// fonction qui génère la galerie des travaux à supprimer
+function creerGalerieSuppression() {
+    //on sélectionne la div galerie
+    let gallery = document.querySelector(".removeWorks");
+    //on parcourt tous les projets
+    for(let i = 0; i < reponseProjetsArchitecte.length; i++){
+        const projetArchitecte = reponseProjetsArchitecte[i];
+
+        const icon = document.createElement("i");
+        icon.classList.add("fa-solid");
+        icon.classList.add("fa-trash-can");
+        icon.classList.add("fa-xs");
+        icon.style.color = "white";
+
+        const div = document.createElement("div");
+        div.classList.add("deleteButton");
+        div.appendChild(icon);
+
+        const image = document.createElement("img");
+        image.classList.add("thumbnail");
+        let imageUrl = projetArchitecte.imageUrl;
+        const indiceDebut = imageUrl.lastIndexOf('/') + 1;
+        const indiceFin =  imageUrl.indexOf('1');
+        image.src = "assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
+        image.alt = projetArchitecte.title;
+
+        const divParent = document.createElement("div");
+        divParent.classList.add("workToDelete");
+        divParent.appendChild(image);
+        divParent.appendChild(div);
+
+        gallery.appendChild(divParent);
+    }
+}
+
 async function reponseData() {
     reponse = await fetch("http://localhost:5678/api/works");
     reponseProjetsArchitecte = await reponse.json();
@@ -74,6 +109,7 @@ async function reponseData() {
 
     creerTravaux();
     creerFiltres();
+    creerGalerieSuppression();
 }
 
 reponseData();

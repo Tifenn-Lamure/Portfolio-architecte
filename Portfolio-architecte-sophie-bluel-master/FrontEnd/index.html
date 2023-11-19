@@ -8,8 +8,10 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
+	<script src="https://kit.fontawesome.com/47f4b42e9c.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="./assets/style.css">
 	<script src="assets/script.js" defer></script>
+	<script src="assets/modal.js" defer></script>
 	<script src="assets/checkLogin.js" defer></script>
 </head>
 <body>
@@ -38,7 +40,23 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
+		<div class="ProjectsModifications">
+			<h2>Mes Projets</h2>
+			<a id="modifier" href="#modal" class="js-modal">
+				<i class="fa-regular fa-pen-to-square fa-2xs"></i>
+				<spa>Modifier</spa>
+			</a>
+			<aside id="modal" class="modalmodification" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none;">
+				<div class="modalWrapper js-modal-stop">
+					<div class="backcross">
+						<i class="fa-solid fa-xmark js-modal-close"></i>
+					</div>
+					<h3 class="titlemodal">Galerie Photo</h3>
+					<div class="removeWorks"></div>
+					<input type="submit" value="Ajouter une photo">
+				</div>
+			</aside>
+		</div>
 		<div class="filters">
 		</div>
 		<div class="gallery">

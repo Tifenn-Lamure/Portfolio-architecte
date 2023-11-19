@@ -133,6 +133,65 @@ li:hover {
 	text-align: center;
 	margin-bottom: 1em;
 }
+
+.modalmodification {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.modalWrapper {
+	overflow: auto;
+	width: 600px;
+	max-width: calc(100vw - 20px);
+	max-width: calc(100vh - 20px);
+	padding: 20px;
+	background-color: white;
+}
+
+.titlemodal {
+	font-size: 28px;
+	text-align: center;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.removeWorks {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	/* gap: 5px; */
+	row-gap: 25px;
+	column-gap: 5px;
+}
+
+.workToDelete {
+	position: relative;
+	width: 8em;
+}
+
+.thumbnail {
+	width: 100%;
+}
+
+.deleteButton {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 5px;
+	right: 5px;
+	width: 1.4em;
+    height: 1.4em;
+    background-color: black;
+    border-radius: 5px;
+}
+
 .filters {
 	display: flex;
 	justify-content: space-between;
