@@ -1,3 +1,6 @@
+let myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
 let reponse;
 let reponseProjetsArchitecte;
 let reponseCategories;
@@ -57,7 +60,7 @@ function creerFiltres() {
     for(let i = 0; i < reponseCategories.length; i++){
         span = document.createElement("span");
         span.id = "filter" + (i+1);
-        span.addEventListener("click",changeSelectedFilter);
+        span.addEventListener("click", changeSelectedFilter);
         span.classList.add("filter");
         span.classList.add("not_selected");
         span.innerText = reponseCategories[i].name;
@@ -65,10 +68,51 @@ function creerFiltres() {
     }
 }
 
+//fonction qui supprime le work X dans la liste des works en utilisant son id
+function deleteWork(workIdString) {
+    //on récupère le numéro dans l'id. Ex : work1 -> 1
+    //longueur de work (4)
+    const indiceDebut = 4;
+    //longueur de workIdString. Ex : work11 -> 6
+    const indiceFin =  workIdString.legnth;
+    //on récupère la sous-chaine avec l'id que l'on convertit en number (integer)
+    const workId = parseInt(workIdString.substring(indiceDebut, indiceFin));
+
+    //on prépare la requête DELETE
+
+    // const body = {
+    //     userId: window.localStorage.getItem("userId"),
+    // };
+    // const raw = JSON.stringify(body);
+
+    // const requestOptions = {
+    //     method: 'DELETE',
+    //     headers: myHeaders,
+    //     body: raw,
+    //     redirect: 'follow'
+    // };
+
+    // fetch(`http://localhost:5678/api/works/${workId}`, requestOptions)
+    //       .then(response => {
+    //         if(!response.ok) throw new Error(`Impossible de supprimer le travail d'id ${workId}`);
+    //         return response.json();
+    //       })
+    //       //supprimer le work dans notre liste
+    //       .then(() => {
+    //         console.log(reponseProjetsArchitecte);
+    //       })
+
+    reponseProjetsArchitecte = reponseProjetsArchitecte.filter((work) => work.id !== workId);
+
+    creerTravaux();
+    creerGalerieSuppression();
+}
+
 // fonction qui génère la galerie des travaux à supprimer
 function creerGalerieSuppression() {
     //on sélectionne la div galerie
     let gallery = document.querySelector(".removeWorks");
+    gallery.innerHTML = "";
     //on parcourt tous les projets
     for(let i = 0; i < reponseProjetsArchitecte.length; i++){
         const projetArchitecte = reponseProjetsArchitecte[i];
@@ -80,7 +124,10 @@ function creerGalerieSuppression() {
         icon.style.color = "white";
 
         const div = document.createElement("div");
+        div.id = "work" + projetArchitecte.id;
         div.classList.add("deleteButton");
+        div.addEventListener("click", (e) => deleteWork(e.currentTarget.id));
+        
         div.appendChild(icon);
 
         const image = document.createElement("img");
@@ -110,6 +157,129 @@ async function reponseData() {
     creerTravaux();
     creerFiltres();
     creerGalerieSuppression();
+
+    //on ajoute un évènement au clic pour supprimer le work
+    //on utilise l'id pour le supprimer
+    // const deleteButtons = document.querySelectorAll(".deleteButton");
+    // deleteButtons.forEach(function (button) {
+    //     console.log(button);
+    //     button.addEventListener("click", (e) => deleteWork(e.currentTarget.id));
+    // })
+
+    createSelectOptions();
 }
 
 reponseData();
+
+let fileAjouterPhoto;
+let titreValue;
+let categoryValue = "-1";
+
+//fonction qui gère l'état du bouton Valider (enable ou disable)
+function checkEtatBoutonValider() {
+    const boutonValider = document.querySelector('[value=Valider]');
+    //on désactive le bouton si
+    boutonValider.disabled = 
+        //titreValue est vide
+        !(titreValue 
+        //OU si categoryValue vaut -1
+        && categoryValue !== "-1"
+        //OU si fileAjouterPhoto est vide
+        && fileAjouterPhoto);
+}
+
+//on exécute la fonction pour que par défaut le bouton soit désactivé
+checkEtatBoutonValider();
+
+//fonction qui gère l'ajout d'un work
+function ajouterPhoto() {
+    //on crée un input de type file dans le code js plutôt que dans le html 
+    //pour pouvoir customiser notre frontend et ne pas utiliser le bouton par défaut
+    let input = document.createElement('input');
+    input.id = "filePhoto";
+    input.type = "file";
+    input.accept = ".png, .jpg";
+    //on utilise _ car on n'a pas besoin d'utiliser event
+    input.onchange = _ => {
+        //input.files retourne un array, notre fichier est le premier élément
+        fileAjouterPhoto = (input.files)[0];
+        checkEtatBoutonValider();
+    };
+    input.click();
+}
+
+let cardAjouterPhoto = document.querySelector(".cardAjouterPhoto");
+cardAjouterPhoto.addEventListener('click', ajouterPhoto);
+
+//fonction qui ajoute les options au sélecteur de catégories
+function createSelectOptions() {
+    const select = document.querySelector("select");
+
+    let option = document.createElement("option");
+    option.value = "-1";
+    option.innerText = "";
+    select.appendChild(option);
+
+    reponseCategories.forEach((category) => {
+        option = document.createElement("option");
+        option.value = category.id;
+        option.innerText = category.name;
+        select.appendChild(option);
+    });
+}
+
+const titre = document.querySelector("[name=title]");
+titre.addEventListener("input", () => {
+    //on stocke la valeur du champ pour gérer l'état disabled du bouton valider
+    titreValue = titre.value;
+    checkEtatBoutonValider();
+});
+
+const category = document.querySelector("[name=category]");
+category.addEventListener("input", () => {
+    //idem que pour titre
+    categoryValue = category.value;
+    checkEtatBoutonValider();
+});
+
+let formAjouterPhoto = document.querySelector(".formAjouterPhoto");
+formAjouterPhoto.addEventListener("submit", (event) => {
+    let formData = new FormData(formAjouterPhoto);
+    //l'API accepte notre form si la valeur de category est associée à la clé categoryId
+    //le formData récupère la valeur dans la clé category par défaut, d'où la modification
+    formData.append("categoryId", formData.get("category"));
+    formData.delete("category");
+    //on ajoute la photo dans le formData
+    formData.append("imageUrl", fileAjouterPhoto.name);
+    //l'API a besoin du userId
+    formData.append("userId", window.localStorage.getItem("userId"));
+    //pour ajouter un id à notre work, on cherche le work avec le plus grand id, que l'on incrémente
+    //ce nouvel id garantit l'unicité et sera l'id de notre nouveau work
+    const idNewWork = reponseProjetsArchitecte.reduce((max, work) => {
+        return work.id > max ? work.id : max; 
+    }, 0) + 1;
+    formData.append("id", idNewWork);
+    
+    // formData.forEach((value, key) => {
+    //     console.log(key, value);
+    // });
+
+    const raw = JSON.stringify(formData);
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+
+    const output = document.querySelector("#output");
+    fetch("http://localhost:5678/api/works", requestOptions)
+        .then(response => {
+            if(!response.ok) throw new Error('Erreur lors de la télétransmission');
+            return response.json();
+        })
+        .then(_ => output.innerText = "Fichier téléversé avec succès !" )
+        .catch(_ => output.innerText = `Erreur lors de la tentative de téléversement du fichier`);
+
+    event.preventDefault();
+});

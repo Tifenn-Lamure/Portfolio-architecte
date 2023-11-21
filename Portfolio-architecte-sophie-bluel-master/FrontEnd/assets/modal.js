@@ -1,33 +1,65 @@
-let modal = null;
+let modalGallery = null;
+let modalAddPhoto = null;
 
-const openModal = function (e) {
+const openModalGallery = function (e) {
     e.preventDefault();
-    const targetHref = document.querySelector(e.currentTarget.getAttribute('href'));
+    const targetHref = document.querySelector("#modalGallery");
     targetHref.style.display = null;
     targetHref.removeAttribute('aria-hidden');
     targetHref.setAttribute('aria-modal', 'true');
-    modal = targetHref;
-    modal.addEventListener('click', closeModal);
-    modal.querySelector(".js-modal-close").addEventListener('click', closeModal);
-    modal.querySelector(".js-modal-stop").addEventListener('click', stopPropagation);
+    modalGallery = targetHref;
+    modalGallery.addEventListener('click', closeModalGallery);
+    modalGallery.querySelector(".modalGallery-close").addEventListener('click', closeModalGallery);
+    modalGallery.querySelector(".modalGallery-stop").addEventListener('click', stopPropagation);
 }
 
-const closeModal = function (e) {
-    if (modal === null) return;
+const closeModalGallery = function (e) {
+    if (modalGallery === null) return;
     e.preventDefault();
-    modal.style.display = "none";
-    modal.setAttribute('aria-hidden', 'true');
-    modal.removeAttribute('aria-modal');
-    modal.removeEventListener('click', closeModal);
-    modal.querySelector('.js-modal-close').removeEventListener('click', closeModal);
-    modal = null;
+    modalGallery.style.display = "none";
+    modalGallery.setAttribute('aria-hidden', 'true');
+    modalGallery.removeAttribute('aria-modal');
+    modalGallery.removeEventListener('click', closeModalGallery);
+    modalGallery.querySelector('.modalGallery-close').removeEventListener('click', closeModalGallery);
+    modalGallery = null;
+}
+
+const openModalAddPhoto = function (e) {
+    e.preventDefault();
+    const targetHref = document.querySelector("#modalAddPhoto");
+    targetHref.style.display = null;
+    targetHref.removeAttribute('aria-hidden');
+    targetHref.setAttribute('aria-modal', 'true');
+    modalAddPhoto = targetHref;
+    modalAddPhoto.addEventListener('click', closeModalAddPhoto);
+    modalAddPhoto.querySelector(".modalAddPhoto-close").addEventListener('click', closeModalAddPhoto);
+    modalAddPhoto.querySelector(".modalAddPhoto-stop").addEventListener('click', stopPropagation);
+}
+
+const closeModalAddPhoto = function (e) {
+    if (modalAddPhoto === null) return;
+    e.preventDefault();
+    modalAddPhoto.style.display = "none";
+    modalAddPhoto.setAttribute('aria-hidden', 'true');
+    modalAddPhoto.removeAttribute('aria-modal');
+    modalAddPhoto.removeEventListener('click', closeModalAddPhoto);
+    modalAddPhoto.querySelector('.modalAddPhoto-close').removeEventListener('click', closeModalAddPhoto);
+    modalAddPhoto = null;
 }
 
 const stopPropagation = function (e) {
     e.stopPropagation();
 }
 
-let lienModal = document.querySelectorAll(".js-modal");
-lienModal.forEach(a => {
-    a.addEventListener('click', openModal);
+//pour qu'une seule modale reste ouverte en permanence,
+//chaque interaction qui ouvre une modale ferme aussi toutes les autres
+let lienModifier = document.querySelectorAll(".modalGallery");
+lienModifier.forEach(lien => {
+    lien.addEventListener('click', openModalGallery);
+    lien.addEventListener('click', closeModalAddPhoto);
+});
+let lienAjouterPhoto = document.querySelectorAll(".modalAddPhoto");
+lienAjouterPhoto.forEach(lien => {
+    lien.addEventListener('click', openModalAddPhoto);
+    lien.addEventListener('click', closeModalGallery);
 });

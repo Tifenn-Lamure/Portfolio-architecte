@@ -42,18 +42,46 @@
 	<section id="portfolio">
 		<div class="ProjectsModifications">
 			<h2>Mes Projets</h2>
-			<a id="modifier" href="#modal" class="js-modal">
+			<a id="modifier" href="#modalGallery" class="modalGallery">
 				<i class="fa-regular fa-pen-to-square fa-2xs"></i>
-				<spa>Modifier</spa>
+				<span>Modifier</span>
 			</a>
-			<aside id="modal" class="modalmodification" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none;">
-				<div class="modalWrapper js-modal-stop">
-					<div class="backcross">
-						<i class="fa-solid fa-xmark js-modal-close"></i>
+			<aside id="modalGallery" class="modalmodification" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none;">
+				<div class="modalWrapper modalGallery-stop">
+					<div class="iconsModal">
+						<i class="fa-solid fa-arrow-left" style="visibility: hidden;"></i>
+						<i class="fa-solid fa-xmark modalGallery-close"></i>
 					</div>
 					<h3 class="titlemodal">Galerie Photo</h3>
 					<div class="removeWorks"></div>
-					<input type="submit" value="Ajouter une photo">
+					<div class="greyLine"></div>
+					<a href="#modalAddPhoto">
+						<button class="modalAddPhoto addPhoto">Ajouter une photo</button>
+					</a>
+				</div>
+			</aside>
+			<aside id="modalAddPhoto" class="modalmodification" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none;">
+				<div class="modalWrapper modalAddPhoto-stop">
+					<div class="iconsModal">
+						<i class="fa-solid fa-arrow-left modalGallery"></i>
+						<i class="fa-solid fa-xmark modalAddPhoto-close"></i>
+					</div>
+					<h3 class="titlemodal">Ajout photo</h3>
+					<form class="formAjouterPhoto" action="" method="post" enctype="multipart/form-data">
+						<div class="cardAjouterPhoto">
+							<i class="fa-regular fa-image fa-7x" style="color: #B9C5CC;"></i>
+							<div>+ Ajouter photo</div>
+							<span>jpg, png : 4mo max</span>
+						</div>
+						<label for="title">Titre</label>
+						<input type="text" name="title" id="title">
+						<label for="category">Catégorie</label>
+						<select name="category" id="category">
+						</select>
+						<div class="greyLine"></div>
+						<span id="output"></span>
+						<input type="submit" value="Valider">
+					</form>
 				</div>
 			</aside>
 		</div>

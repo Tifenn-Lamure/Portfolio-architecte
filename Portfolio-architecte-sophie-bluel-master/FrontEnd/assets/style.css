@@ -111,7 +111,7 @@ li:hover {
 	align-items: center;
 }
 #introduction figure {
-	flex: 1
+	flex: 1;
 }
 #introduction img {
 	display: block;
@@ -155,6 +155,11 @@ li:hover {
 	background-color: white;
 }
 
+.iconsModal {
+	display: flex;
+	justify-content: space-between;
+}
+
 .titlemodal {
 	font-size: 28px;
 	text-align: center;
@@ -190,6 +195,69 @@ li:hover {
     height: 1.4em;
     background-color: black;
     border-radius: 5px;
+}
+
+.formAjouterPhoto {
+	width: 30em;
+	height: 40em;
+	margin-left: auto;
+	margin-right: auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.cardAjouterPhoto {
+	height: 17em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: #E8F1F6;
+	cursor: pointer;
+}
+
+.cardAjouterPhoto:hover {
+	background-color: #e2eaee;
+}
+
+.cardAjouterPhoto div {
+	margin-top: 1em;
+	margin-bottom: 0.5em;
+	background-color: #B9C5CC;
+	font-weight: 800;
+	color: #306685;
+	width: 12em;
+	height: 2.5em;
+	border-radius: 1.25em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.formAjouterPhoto input {
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+.formAjouterPhoto select {
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	margin-bottom: 2em;
+}
+.formAjouterPhoto label {
+	margin: 2em 0 1em 0;
+}
+
+.greyLine {
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 3em;
+	height: 1px;
+	background-color: #B3B3B3;
 }
 
 .filters {
@@ -275,6 +343,30 @@ input[type="submit"]{
 	width: 180px;
 	text-align: center;
 	border-radius: 60px ;
+}
+input[type="submit"]:disabled{
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	background-color: #A7A7A7;
+	margin : 2em auto ;
+	width: 180px;
+	text-align: center;
+	border-radius: 60px;
+}
+
+.addPhoto {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	background-color: #1D6154;
+	margin : 2em auto ;
+	width: 180px;
+	text-align: center;
+	border-radius: 60px;
 }
 
 footer {
