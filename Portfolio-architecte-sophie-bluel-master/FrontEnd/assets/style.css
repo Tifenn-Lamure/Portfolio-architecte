@@ -64,10 +64,10 @@ body {
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0
+	margin: 50px 0;
 }
 section {
-	margin: 50px 0
+	margin: 50px 0;
 }
 
 h1{
@@ -106,6 +106,18 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
+
+#editionBanner{
+	display: flex;
+	height: 3em;
+	background-color: black;
+	color: white;
+	align-items: center;
+	justify-content: center;
+}
+#editionBanner span {
+	margin-left: 0.5em;
+}
 #introduction {
 	display: flex;
 	align-items: center;
@@ -132,6 +144,15 @@ li:hover {
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
+}
+
+.titleMyProjects{
+	display: flex;
+	justify-content: center;
+}
+.lienModifier {
+	margin-top: 0.7em;
+	margin-left: 2em;
 }
 
 .modalmodification {
@@ -207,7 +228,7 @@ li:hover {
 }
 
 .cardAjouterPhoto {
-	height: 17em;
+	height: 22em;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -251,6 +272,15 @@ li:hover {
 	margin: 2em 0 1em 0;
 }
 
+#photoAdded {
+	margin-top: 0.3em;
+	color: green;
+}
+
+#output {
+	margin-top: 0.3em;
+}
+
 .greyLine {
 	width: 50%;
 	margin-left: auto;
@@ -263,7 +293,7 @@ li:hover {
 .filters {
 	display: flex;
 	justify-content: space-between;
-	width: 70%;
+	width: 60%;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 4em;

@@ -2,12 +2,14 @@ const login = document.querySelector("#login");
 const logout = document.querySelector("#logout");
 
 const modifier = document.querySelector("#modifier");
+const editionBanner = document.querySelector("#editionBanner");
 
 // fonction qui vérifie si un user est connecté
 function checkIfUserLogged() {
     //par défaut aucun user est connecté : on cache le login et le lien modifier pour ouvrir la modale de modification
     logout.style.display = "none";
     modifier.style.display = "none";
+    editionBanner.style.display = "none";
     //on regarde si un token a été enregistré
     const token = window.localStorage.getItem("token");
     //si on a un token...
@@ -21,6 +23,7 @@ function checkIfUserLogged() {
         if(userId === 1) {
             //on affiche le lien "modifier"
             modifier.style.display = null;
+            editionBanner.style.display = null;
         }
     }
     else {

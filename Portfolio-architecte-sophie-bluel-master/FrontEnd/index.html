@@ -15,6 +15,10 @@
 	<script src="assets/checkLogin.js" defer></script>
 </head>
 <body>
+<div id="editionBanner">
+	<i class="fa-regular fa-pen-to-square"></i>
+	<span>Mode édition</span>
+</div>
 <header>
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
@@ -41,11 +45,15 @@
 	</section>
 	<section id="portfolio">
 		<div class="ProjectsModifications">
-			<h2>Mes Projets</h2>
-			<a id="modifier" href="#modalGallery" class="modalGallery">
-				<i class="fa-regular fa-pen-to-square fa-2xs"></i>
-				<span>Modifier</span>
+			<div class="titleMyProjects">
+				<h2>Mes projets</h2>
+				<div class="lienModifier">
+					<a id="modifier" href="#modalGallery" class="modalGallery">
+					<i class="fa-regular fa-pen-to-square fa-2xs"></i>
+					<span>Modifier</span>
+				</div>
 			</a>
+			</div>
 			<aside id="modalGallery" class="modalmodification" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none;">
 				<div class="modalWrapper modalGallery-stop">
 					<div class="iconsModal">
@@ -73,6 +81,7 @@
 							<div>+ Ajouter photo</div>
 							<span>jpg, png : 4mo max</span>
 						</div>
+						<span id="photoAdded"></span>
 						<label for="title">Titre</label>
 						<input type="text" name="title" id="title">
 						<label for="category">Catégorie</label>

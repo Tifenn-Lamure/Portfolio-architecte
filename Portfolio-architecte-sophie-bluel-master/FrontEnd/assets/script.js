@@ -204,6 +204,7 @@ function ajouterPhoto() {
         //input.files retourne un array, notre fichier est le premier élément
         fileAjouterPhoto = (input.files)[0];
         checkEtatBoutonValider();
+        document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
     };
     input.click();
 }
