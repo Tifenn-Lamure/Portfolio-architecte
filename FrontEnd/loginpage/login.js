@@ -27,7 +27,7 @@ function submitForm() {
           .then(result => {
             window.localStorage.setItem("token", result.token);
             window.localStorage.setItem("userId", result.userId);
-            window.location.href = "../index.html";
+            window.location.href = "../../index.html";
           })
           .catch(error => {
             const badLoginText = document.querySelector("form p");
