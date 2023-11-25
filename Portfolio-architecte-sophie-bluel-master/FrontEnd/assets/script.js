@@ -74,33 +74,31 @@ function deleteWork(workIdString) {
     //longueur de work (4)
     const indiceDebut = 4;
     //longueur de workIdString. Ex : work11 -> 6
-    const indiceFin =  workIdString.legnth;
+    const indiceFin =  workIdString.length;
     //on récupère la sous-chaine avec l'id que l'on convertit en number (integer)
     const workId = parseInt(workIdString.substring(indiceDebut, indiceFin));
 
     //on prépare la requête DELETE
+    let myHeaders = new Headers(); 
+    myHeaders.append("Authorization", "Bearer " + getToken());
 
-    // const body = {
-    //     userId: window.localStorage.getItem("userId"),
-    // };
-    // const raw = JSON.stringify(body);
+    const requestOptions = {
+        method: 'DELETE',
+        headers: myHeaders,
+    };
 
-    // const requestOptions = {
-    //     method: 'DELETE',
-    //     headers: myHeaders,
-    //     body: raw,
-    //     redirect: 'follow'
-    // };
-
-    // fetch(`http://localhost:5678/api/works/${workId}`, requestOptions)
-    //       .then(response => {
-    //         if(!response.ok) throw new Error(`Impossible de supprimer le travail d'id ${workId}`);
-    //         return response.json();
-    //       })
-    //       //supprimer le work dans notre liste
-    //       .then(() => {
-    //         console.log(reponseProjetsArchitecte);
-    //       })
+    fetch(`http://localhost:5678/api/works/${workId}`, requestOptions)
+        .then(response => {
+            if(!response.ok) throw new Error(`Impossible de supprimer le travail d'id ${workId}`);
+            return response;
+        })
+        // supprimer le work dans notre liste
+        .then(() => {
+            // reponseProjetsArchitecte = reponseProjetsArchitecte.filter((work) => work.id !== workId);
+        })
+        .catch((error) => {
+            console.log('erreur : ', error);
+        })
 
     reponseProjetsArchitecte = reponseProjetsArchitecte.filter((work) => work.id !== workId);
 
@@ -126,7 +124,11 @@ function creerGalerieSuppression() {
         const div = document.createElement("div");
         div.id = "work" + projetArchitecte.id;
         div.classList.add("deleteButton");
-        div.addEventListener("click", (e) => deleteWork(e.currentTarget.id));
+        div.addEventListener("click", (e) => {
+            deleteWork(e.currentTarget.id);
+            e.preventDefault();
+            e.stopPropagation();
+        });
         
         div.appendChild(icon);
 
@@ -157,15 +159,6 @@ async function reponseData() {
     creerTravaux();
     creerFiltres();
     creerGalerieSuppression();
-
-    //on ajoute un évènement au clic pour supprimer le work
-    //on utilise l'id pour le supprimer
-    // const deleteButtons = document.querySelectorAll(".deleteButton");
-    // deleteButtons.forEach(function (button) {
-    //     console.log(button);
-    //     button.addEventListener("click", (e) => deleteWork(e.currentTarget.id));
-    // })
-
     createSelectOptions();
 }
 
@@ -284,3 +277,9 @@ formAjouterPhoto.addEventListener("submit", (event) => {
 
     event.preventDefault();
 });
+
+function getToken(){
+    return window.localStorage.getItem("token");
+}
+
+window.addEventListener('error', (error) => console.log('window', error))
