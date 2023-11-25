@@ -22,7 +22,7 @@ function creerTravaux() {
 
             const indiceDebut = imageUrl.lastIndexOf('/') + 1;
             const indiceFin =  imageUrl.indexOf('1');
-            image.src = "assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
+            image.src = "FrontEnd/assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
             image.alt = projetArchitecte.title;
             figcaption.innerText = projetArchitecte.title;
 
@@ -137,7 +137,7 @@ function creerGalerieSuppression() {
         let imageUrl = projetArchitecte.imageUrl;
         const indiceDebut = imageUrl.lastIndexOf('/') + 1;
         const indiceFin =  imageUrl.indexOf('1');
-        image.src = "assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
+        image.src = "FrontEnd/assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
         image.alt = projetArchitecte.title;
 
         const divParent = document.createElement("div");
