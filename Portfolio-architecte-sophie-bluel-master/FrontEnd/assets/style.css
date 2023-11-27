@@ -421,3 +421,6 @@ footer nav ul {
 .loginbackground {
 	background-color: #FFFEF8;  
 }
+.filter:hover, .deleteButton:hover, .modalAddPhoto:hover, .modalAddPhoto-close:hover, .modalGallery:hover, .modalGallery-close:hover, input[type="submit"]:hover, #logout:hover {
+	cursor:pointer;
+}
