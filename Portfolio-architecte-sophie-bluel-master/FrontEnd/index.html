@@ -77,10 +77,14 @@
 					<h3 class="titlemodal">Ajout photo</h3>
 					<form class="formAjouterPhoto" action="" method="post" enctype="multipart/form-data">
 						<div class="cardAjouterPhoto">
-							<i class="fa-regular fa-image fa-7x" style="color: #B9C5CC;"></i>
-							<div>+ Ajouter photo</div>
-							<span>jpg, png : 4mo max</span>
+							<div id="defaultAddPhotoDisplay">
+								<i class="fa-regular fa-image fa-7x" style="color: #B9C5CC;"></i>
+								<div>+ Ajouter photo</div>
+								<span>jpg, png : 4mo max</span>
+							</div>
+							<img id="preview" src="" alt="">
 						</div>
+						<input type="file" id="filePhoto" name="image" accept="image/png, image/jpeg"/>
 						<span id="photoAdded"></span>
 						<label for="title">Titre</label>
 						<input type="text" name="title" id="title">

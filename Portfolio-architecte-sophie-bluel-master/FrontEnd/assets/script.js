@@ -7,6 +7,36 @@ let reponseCategories;
 
 let categorySelected = "Tous";
 
+const inputFilePhoto = document.getElementById("filePhoto");
+
+inputFilePhoto.onchange = _ => {
+    //inputFilePhoto.files retourne un array, notre fichier est le premier élément
+    fileAjouterPhoto = (inputFilePhoto.files)[0];
+    console.log("fileAjouterPhoto", fileAjouterPhoto)
+
+    const preview = document.querySelector("#preview");
+    preview.style.display = "block";
+    preview.file = fileAjouterPhoto;
+
+    const readerURL = new FileReader();
+    readerURL.onload = (e) => {
+        preview.src = e.target.result;
+    }
+    readerURL.readAsDataURL(fileAjouterPhoto);
+
+    const readerBinary = new FileReader();
+    readerBinary.onload = (e) => {
+        imageBinaryString = e.target.result;
+    }
+    readerBinary.readAsBinaryString(fileAjouterPhoto);
+
+    const defaultAddPhotoDisplay = document.querySelector("#defaultAddPhotoDisplay");
+    defaultAddPhotoDisplay.style.display = "none";
+
+    checkEtatBoutonValider();
+    document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
+};
+
 function creerTravaux() {
     let gallery = document.querySelector(".gallery");
     gallery.innerHTML = "";
@@ -20,9 +50,7 @@ function creerTravaux() {
 
             let imageUrl = projetArchitecte.imageUrl;
 
-            const indiceDebut = imageUrl.lastIndexOf('/') + 1;
-            const indiceFin =  imageUrl.indexOf('1');
-            image.src = "assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
+            image.src = imageUrl;
             image.alt = projetArchitecte.title;
             figcaption.innerText = projetArchitecte.title;
 
@@ -79,12 +107,12 @@ function deleteWork(workIdString) {
     const workId = parseInt(workIdString.substring(indiceDebut, indiceFin));
 
     //on prépare la requête DELETE
-    let myHeaders = new Headers(); 
-    myHeaders.append("Authorization", "Bearer " + getToken());
+    let myHeadersDelete = new Headers(); 
+    myHeadersDelete.append("Authorization", "Bearer " + getToken());
 
     const requestOptions = {
         method: 'DELETE',
-        headers: myHeaders,
+        headers: myHeadersDelete,
     };
 
     fetch(`http://localhost:5678/api/works/${workId}`, requestOptions)
@@ -135,9 +163,7 @@ function creerGalerieSuppression() {
         const image = document.createElement("img");
         image.classList.add("thumbnail");
         let imageUrl = projetArchitecte.imageUrl;
-        const indiceDebut = imageUrl.lastIndexOf('/') + 1;
-        const indiceFin =  imageUrl.indexOf('1');
-        image.src = "assets/images/" + imageUrl.substring(indiceDebut, indiceFin) + ".png";
+        image.src = imageUrl;
         image.alt = projetArchitecte.title;
 
         const divParent = document.createElement("div");
@@ -184,22 +210,12 @@ function checkEtatBoutonValider() {
 //on exécute la fonction pour que par défaut le bouton soit désactivé
 checkEtatBoutonValider();
 
+let imageBinaryString;
+
 //fonction qui gère l'ajout d'un work
 function ajouterPhoto() {
-    //on crée un input de type file dans le code js plutôt que dans le html 
-    //pour pouvoir customiser notre frontend et ne pas utiliser le bouton par défaut
-    let input = document.createElement('input');
-    input.id = "filePhoto";
-    input.type = "file";
-    input.accept = ".png, .jpg";
-    //on utilise _ car on n'a pas besoin d'utiliser event
-    input.onchange = _ => {
-        //input.files retourne un array, notre fichier est le premier élément
-        fileAjouterPhoto = (input.files)[0];
-        checkEtatBoutonValider();
-        document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
-    };
-    input.click();
+
+    inputFilePhoto.click();
 }
 
 let cardAjouterPhoto = document.querySelector(".cardAjouterPhoto");
@@ -241,29 +257,31 @@ formAjouterPhoto.addEventListener("submit", (event) => {
     let formData = new FormData(formAjouterPhoto);
     //l'API accepte notre form si la valeur de category est associée à la clé categoryId
     //le formData récupère la valeur dans la clé category par défaut, d'où la modification
-    formData.append("categoryId", formData.get("category"));
-    formData.delete("category");
+    // formData.append("categoryId", parseInt(formData.get("category")));
+    // formData.delete("category");
     //on ajoute la photo dans le formData
-    formData.append("imageUrl", fileAjouterPhoto.name);
+    // formData.append("imageUrl", imageBinaryString);
     //l'API a besoin du userId
-    formData.append("userId", window.localStorage.getItem("userId"));
     //pour ajouter un id à notre work, on cherche le work avec le plus grand id, que l'on incrémente
     //ce nouvel id garantit l'unicité et sera l'id de notre nouveau work
     const idNewWork = reponseProjetsArchitecte.reduce((max, work) => {
         return work.id > max ? work.id : max; 
     }, 0) + 1;
-    formData.append("id", idNewWork);
-    
-    // formData.forEach((value, key) => {
-    //     console.log(key, value);
-    // });
+    // formData.append("id", idNewWork);
 
-    const raw = JSON.stringify(formData);
+    
+    formData.forEach((value, key) => {
+        console.log(key, value);
+    });
+
+    let myHeadersPost = new Headers(); 
+    myHeadersPost.append("Authorization", "Bearer " + getToken());
+    myHeadersPost.append("Accept", "application/json");
+
     var requestOptions = {
         method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
+        headers: myHeadersPost,
+        body: formData,
     };
 
     const output = document.querySelector("#output");
