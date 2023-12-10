@@ -1,3 +1,5 @@
+import { initStateAddPhoto } from "./script.js";
+
 let modalGallery = null;
 let modalAddPhoto = null;
 
@@ -22,6 +24,8 @@ const closeModalGallery = function (e) {
     modalGallery.removeEventListener('click', closeModalGallery);
     modalGallery.querySelector('.modalGallery-close').removeEventListener('click', closeModalGallery);
     modalGallery = null;
+
+    initStateAddPhoto();
 }
 
 const openModalAddPhoto = function (e) {
@@ -63,3 +67,5 @@ lienAjouterPhoto.forEach(lien => {
     lien.addEventListener('click', openModalAddPhoto);
     lien.addEventListener('click', closeModalGallery);
 });
+
+export {closeModalAddPhoto};

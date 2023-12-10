@@ -1,3 +1,5 @@
+import { closeModalAddPhoto } from "./modal.js";
+
 let myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
@@ -8,13 +10,13 @@ let reponseCategories;
 let categorySelected = "Tous";
 
 const inputFilePhoto = document.getElementById("filePhoto");
+const defaultAddPhotoDisplay = document.querySelector("#defaultAddPhotoDisplay");
+const preview = document.querySelector("#preview");
 
-inputFilePhoto.onchange = _ => {
+inputFilePhoto.addEventListener("input", _ => {
     //inputFilePhoto.files retourne un array, notre fichier est le premier élément
     fileAjouterPhoto = (inputFilePhoto.files)[0];
-    console.log("fileAjouterPhoto", fileAjouterPhoto)
 
-    const preview = document.querySelector("#preview");
     preview.style.display = "block";
     preview.file = fileAjouterPhoto;
 
@@ -24,18 +26,11 @@ inputFilePhoto.onchange = _ => {
     }
     readerURL.readAsDataURL(fileAjouterPhoto);
 
-    const readerBinary = new FileReader();
-    readerBinary.onload = (e) => {
-        imageBinaryString = e.target.result;
-    }
-    readerBinary.readAsBinaryString(fileAjouterPhoto);
-
-    const defaultAddPhotoDisplay = document.querySelector("#defaultAddPhotoDisplay");
     defaultAddPhotoDisplay.style.display = "none";
 
     checkEtatBoutonValider();
     document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
-};
+});
 
 function creerTravaux() {
     let gallery = document.querySelector(".gallery");
@@ -76,6 +71,7 @@ function changeSelectedFilter(event) {
 
 function creerFiltres() {
     let filters = document.querySelector(".filters");
+    filters.innerHTML = "";
 
     let span = document.createElement("span");
     span.id = "filter0";
@@ -119,10 +115,6 @@ function deleteWork(workIdString) {
         .then(response => {
             if(!response.ok) throw new Error(`Impossible de supprimer le travail d'id ${workId}`);
             return response;
-        })
-        // supprimer le work dans notre liste
-        .then(() => {
-            // reponseProjetsArchitecte = reponseProjetsArchitecte.filter((work) => work.id !== workId);
         })
         .catch((error) => {
             console.log('erreur : ', error);
@@ -175,12 +167,19 @@ function creerGalerieSuppression() {
     }
 }
 
-async function reponseData() {
+async function getWorks() {
     reponse = await fetch("http://localhost:5678/api/works");
     reponseProjetsArchitecte = await reponse.json();
+}
 
+async function getCategories() {
     reponse = await fetch("http://localhost:5678/api/categories");
     reponseCategories = await reponse.json();
+}
+
+async function reponseData() {
+    await getWorks();
+    await getCategories();    
 
     creerTravaux();
     creerFiltres();
@@ -197,6 +196,7 @@ let categoryValue = "-1";
 //fonction qui gère l'état du bouton Valider (enable ou disable)
 function checkEtatBoutonValider() {
     const boutonValider = document.querySelector('[value=Valider]');
+
     //on désactive le bouton si
     boutonValider.disabled = 
         //titreValue est vide
@@ -210,11 +210,8 @@ function checkEtatBoutonValider() {
 //on exécute la fonction pour que par défaut le bouton soit désactivé
 checkEtatBoutonValider();
 
-let imageBinaryString;
-
 //fonction qui gère l'ajout d'un work
 function ajouterPhoto() {
-
     inputFilePhoto.click();
 }
 
@@ -224,6 +221,7 @@ cardAjouterPhoto.addEventListener('click', ajouterPhoto);
 //fonction qui ajoute les options au sélecteur de catégories
 function createSelectOptions() {
     const select = document.querySelector("select");
+    select.innerHTML = "";
 
     let option = document.createElement("option");
     option.value = "-1";
@@ -252,27 +250,26 @@ category.addEventListener("input", () => {
     checkEtatBoutonValider();
 });
 
+// fonction qui gère le reset des valeurs nécessaires à l'upload
+function initStateAddPhoto() {
+    //reset des champs du formulaire
+    titre.value = "";
+    titreValue = "";
+    category.value = null;
+    categoryValue = "-1";
+    fileAjouterPhoto = null;
+
+    document.querySelector("#photoAdded").innerText = "";
+
+    checkEtatBoutonValider();
+    defaultAddPhotoDisplay.style.display = null;
+
+    preview.style.display = "none";
+}
+
 let formAjouterPhoto = document.querySelector(".formAjouterPhoto");
 formAjouterPhoto.addEventListener("submit", (event) => {
     let formData = new FormData(formAjouterPhoto);
-    //l'API accepte notre form si la valeur de category est associée à la clé categoryId
-    //le formData récupère la valeur dans la clé category par défaut, d'où la modification
-    // formData.append("categoryId", parseInt(formData.get("category")));
-    // formData.delete("category");
-    //on ajoute la photo dans le formData
-    // formData.append("imageUrl", imageBinaryString);
-    //l'API a besoin du userId
-    //pour ajouter un id à notre work, on cherche le work avec le plus grand id, que l'on incrémente
-    //ce nouvel id garantit l'unicité et sera l'id de notre nouveau work
-    const idNewWork = reponseProjetsArchitecte.reduce((max, work) => {
-        return work.id > max ? work.id : max; 
-    }, 0) + 1;
-    // formData.append("id", idNewWork);
-
-    
-    formData.forEach((value, key) => {
-        console.log(key, value);
-    });
 
     let myHeadersPost = new Headers(); 
     myHeadersPost.append("Authorization", "Bearer " + getToken());
@@ -284,14 +281,17 @@ formAjouterPhoto.addEventListener("submit", (event) => {
         body: formData,
     };
 
-    const output = document.querySelector("#output");
     fetch("http://localhost:5678/api/works", requestOptions)
         .then(response => {
             if(!response.ok) throw new Error('Erreur lors de la télétransmission');
             return response.json();
         })
-        .then(_ => output.innerText = "Fichier téléversé avec succès !" )
-        .catch(_ => output.innerText = `Erreur lors de la tentative de téléversement du fichier`);
+        .then(_ => {
+            closeModalAddPhoto(event);
+
+            initStateAddPhoto();
+            reponseData();
+        })
 
     event.preventDefault();
 });
@@ -300,4 +300,4 @@ function getToken(){
     return window.localStorage.getItem("token");
 }
 
-window.addEventListener('error', (error) => console.log('window', error))
+export {initStateAddPhoto};
