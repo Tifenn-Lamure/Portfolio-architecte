@@ -29,7 +29,7 @@ function submitForm() {
             window.localStorage.setItem("userId", result.userId);
             window.location.href = "../index.html";
           })
-          .catch(error => {
+          .catch(_ => {
             const badLoginText = document.querySelector("form p");
             badLoginText.classList.add("badLogin");
             badLoginText.classList.remove("hidden");

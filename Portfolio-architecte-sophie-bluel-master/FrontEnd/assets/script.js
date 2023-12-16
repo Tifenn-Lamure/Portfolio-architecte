@@ -12,41 +12,54 @@ let categorySelected = "Tous";
 const inputFilePhoto = document.getElementById("filePhoto");
 const defaultAddPhotoDisplay = document.querySelector("#defaultAddPhotoDisplay");
 const preview = document.querySelector("#preview");
+let formAjouterPhoto = document.querySelector(".formAjouterPhoto");
+let cardAjouterPhoto = document.querySelector(".cardAjouterPhoto");
+const titre = document.querySelector("[name=title]");
+const category = document.querySelector("[name=category]");
 
-inputFilePhoto.addEventListener("input", _ => {
-    //inputFilePhoto.files retourne un array, notre fichier est le premier élément
-    fileAjouterPhoto = (inputFilePhoto.files)[0];
+let fileAjouterPhoto;
+let titreValue;
+let categoryValue = "-1";
 
-    preview.style.display = "block";
-    preview.file = fileAjouterPhoto;
+function getToken(){
+    return window.localStorage.getItem("token");
+}
 
-    const readerURL = new FileReader();
-    readerURL.onload = (e) => {
-        preview.src = e.target.result;
-    }
-    readerURL.readAsDataURL(fileAjouterPhoto);
 
-    defaultAddPhotoDisplay.style.display = "none";
 
-    checkEtatBoutonValider();
-    document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
-});
+// fonction qui stocke les valeurs des works que renvoie l'API dans reponseProjetsArchitecte
+async function getWorks() {
+    reponse = await fetch("http://localhost:5678/api/works");
+    reponseProjetsArchitecte = await reponse.json();
+}
 
+// fonction qui stocke les valeurs des catégories que renvoie l'API dans reponseCategories
+async function getCategories() {
+    reponse = await fetch("http://localhost:5678/api/categories");
+    reponseCategories = await reponse.json();
+}
+
+
+
+// fonction qui crée la gallerie de tous les travaux à partir des informations de l'API
 function creerTravaux() {
     let gallery = document.querySelector(".gallery");
+    // on reset les balises à l'init pour les fois suivantes où on appelle la fonction
     gallery.innerHTML = "";
 
     for(let i = 0; i < reponseProjetsArchitecte.length; i++){
         const projetArchitecte = reponseProjetsArchitecte[i];
+        // on affiche le work si on affiche toutes les catégories
+        // OU dans le cas où on a sélectionné une catégorie, on affiche que les works de même catégorie
         if(categorySelected === "Tous" || projetArchitecte.category.name === categorySelected) {
             const figure = document.createElement("figure");
             const image = document.createElement("img");
             const figcaption = document.createElement("figcaption");
 
             let imageUrl = projetArchitecte.imageUrl;
-
             image.src = imageUrl;
             image.alt = projetArchitecte.title;
+
             figcaption.innerText = projetArchitecte.title;
 
             figure.appendChild(image);
@@ -57,28 +70,20 @@ function creerTravaux() {
     }
 }
 
-function changeSelectedFilter(event) {
-    categorySelected = event.target.innerText;
-    creerTravaux();
-
-    let selected = document.querySelector(".selected");
-    selected.classList.remove("selected");
-    selected.classList.add("not_selected");
-    let toSelected = document.querySelector(`#${event.target.id}`);
-    toSelected.classList.remove("not_selected");
-    toSelected.classList.add("selected");
-}
-
+// fonction qui crée les filtres à partir des catégories récupérées de l'API
 function creerFiltres() {
     let filters = document.querySelector(".filters");
+    // on reset les balises à l'init pour les fois suivantes où on appelle la fonction
     filters.innerHTML = "";
 
+    // le premier filtre est "Tous", on le gère différemment des catégories
     let span = document.createElement("span");
     span.id = "filter0";
     span.addEventListener("click", changeSelectedFilter);
     span.classList.add("filter");
     span.classList.add("selected");
     span.innerText = "Tous";
+
     filters.appendChild(span);
 
     for(let i = 0; i < reponseCategories.length; i++){
@@ -88,9 +93,28 @@ function creerFiltres() {
         span.classList.add("filter");
         span.classList.add("not_selected");
         span.innerText = reponseCategories[i].name;
+
         filters.appendChild(span);
     }
 }
+
+// fonction qui gère la modification des travaux que l'on affiche lorsqu'un filtre est sélectionné
+function changeSelectedFilter(event) {
+    // on récupère a nouvelle catégorie
+    categorySelected = event.target.innerText;
+    // on recrée les works avec la nouvelle catégorie comme filtre qui définit les works à afficher
+    creerTravaux();
+
+    // on actualise le style des filtres
+    let selected = document.querySelector(".selected");
+    selected.classList.remove("selected");
+    selected.classList.add("not_selected");
+    let toSelected = document.querySelector(`#${event.target.id}`);
+    toSelected.classList.remove("not_selected");
+    toSelected.classList.add("selected");
+}
+
+
 
 //fonction qui supprime le work X dans la liste des works en utilisant son id
 function deleteWork(workIdString) {
@@ -136,9 +160,7 @@ function creerGalerieSuppression() {
         const projetArchitecte = reponseProjetsArchitecte[i];
 
         const icon = document.createElement("i");
-        icon.classList.add("fa-solid");
-        icon.classList.add("fa-trash-can");
-        icon.classList.add("fa-xs");
+        icon.classList.add("fa-solid", "fa-trash-can", "fa-xs");
         icon.style.color = "white";
 
         const div = document.createElement("div");
@@ -167,32 +189,6 @@ function creerGalerieSuppression() {
     }
 }
 
-async function getWorks() {
-    reponse = await fetch("http://localhost:5678/api/works");
-    reponseProjetsArchitecte = await reponse.json();
-}
-
-async function getCategories() {
-    reponse = await fetch("http://localhost:5678/api/categories");
-    reponseCategories = await reponse.json();
-}
-
-async function reponseData() {
-    await getWorks();
-    await getCategories();    
-
-    creerTravaux();
-    creerFiltres();
-    creerGalerieSuppression();
-    createSelectOptions();
-}
-
-reponseData();
-
-let fileAjouterPhoto;
-let titreValue;
-let categoryValue = "-1";
-
 //fonction qui gère l'état du bouton Valider (enable ou disable)
 function checkEtatBoutonValider() {
     const boutonValider = document.querySelector('[value=Valider]');
@@ -207,16 +203,10 @@ function checkEtatBoutonValider() {
         && fileAjouterPhoto);
 }
 
-//on exécute la fonction pour que par défaut le bouton soit désactivé
-checkEtatBoutonValider();
-
 //fonction qui gère l'ajout d'un work
 function ajouterPhoto() {
     inputFilePhoto.click();
 }
-
-let cardAjouterPhoto = document.querySelector(".cardAjouterPhoto");
-cardAjouterPhoto.addEventListener('click', ajouterPhoto);
 
 //fonction qui ajoute les options au sélecteur de catégories
 function createSelectOptions() {
@@ -236,20 +226,6 @@ function createSelectOptions() {
     });
 }
 
-const titre = document.querySelector("[name=title]");
-titre.addEventListener("input", () => {
-    //on stocke la valeur du champ pour gérer l'état disabled du bouton valider
-    titreValue = titre.value;
-    checkEtatBoutonValider();
-});
-
-const category = document.querySelector("[name=category]");
-category.addEventListener("input", () => {
-    //idem que pour titre
-    categoryValue = category.value;
-    checkEtatBoutonValider();
-});
-
 // fonction qui gère le reset des valeurs nécessaires à l'upload
 function initStateAddPhoto() {
     //reset des champs du formulaire
@@ -262,12 +238,51 @@ function initStateAddPhoto() {
     document.querySelector("#photoAdded").innerText = "";
 
     checkEtatBoutonValider();
-    defaultAddPhotoDisplay.style.display = null;
 
+    defaultAddPhotoDisplay.style.display = null;
     preview.style.display = "none";
 }
 
-let formAjouterPhoto = document.querySelector(".formAjouterPhoto");
+
+
+// fonction qui setup tous les objets (galleries, filtres, selecteur d'options) qui dépendent des valeurs 
+// retournées par l'API
+async function setupWorksCategoriesFilters() {
+    await getWorks();
+    await getCategories();    
+
+    creerTravaux();
+    creerFiltres();
+    creerGalerieSuppression();
+    createSelectOptions();
+}
+
+//on exécute la fonction pour que par défaut le bouton soit désactivé
+checkEtatBoutonValider();
+
+setupWorksCategoriesFilters();
+
+
+
+inputFilePhoto.addEventListener("input", _ => {
+    //inputFilePhoto.files retourne un array, notre fichier est le premier élément
+    fileAjouterPhoto = (inputFilePhoto.files)[0];
+
+    preview.style.display = "block";
+    preview.file = fileAjouterPhoto;
+
+    const readerURL = new FileReader();
+    readerURL.onload = (e) => {
+        preview.src = e.target.result;
+    }
+    readerURL.readAsDataURL(fileAjouterPhoto);
+
+    defaultAddPhotoDisplay.style.display = "none";
+
+    checkEtatBoutonValider();
+    document.querySelector("#photoAdded").innerText = `${fileAjouterPhoto.name} sélectionné`;
+});
+
 formAjouterPhoto.addEventListener("submit", (event) => {
     let formData = new FormData(formAjouterPhoto);
 
@@ -290,14 +305,24 @@ formAjouterPhoto.addEventListener("submit", (event) => {
             closeModalAddPhoto(event);
 
             initStateAddPhoto();
-            reponseData();
+            setupWorksCategoriesFilters();
         })
 
     event.preventDefault();
 });
 
-function getToken(){
-    return window.localStorage.getItem("token");
-}
+cardAjouterPhoto.addEventListener('click', ajouterPhoto);
+
+titre.addEventListener("input", () => {
+    //on stocke la valeur du champ pour gérer l'état disabled du bouton valider
+    titreValue = titre.value;
+    checkEtatBoutonValider();
+});
+
+category.addEventListener("input", () => {
+    //idem que pour titre
+    categoryValue = category.value;
+    checkEtatBoutonValider();
+});
 
 export {initStateAddPhoto};
